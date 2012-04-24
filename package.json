@@ -1,0 +1,6 @@
+{
+    "name": "geocsv",
+    "description": "Style points using geo rules",
+    "engines": {"tilemill":"*"},
+    "private": false
+}

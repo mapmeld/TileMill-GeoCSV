@@ -1,0 +1,189 @@
+<div style="padding:20px;">
+  <strong>GeoCSV</strong>
+  <br/><br/>
+  <h3>Choose the layer:</h3>
+  <select name='interactivity.layer'>
+    <option value=''>-- disabled --</option>
+      <% _(get('Layer').toArray().reverse()).each(function(layer) { %>
+        <option value='<%= layer.get('id') %>'><%= layer.get('id') %>
+        </option>
+      <% }); %>
+  </select>
+  <hr/>
+  <h3>Choose the Latitude/Y property:</h3>
+  <select id="latfield" name="latfield" class="tokens">
+  </select>
+  <h3>Choose the Longitude/X property:</h3>
+  <select id="lngfield" name="lngfield" class="tokens">
+  </select>
+  <h3>Choose the ID property:</h3>
+  <select id="idfield" name="idfield" class="tokens">
+  </select>
+  <hr/>
+  <h3>Write your query inside these brackets:</h3>
+  <input id="typegeoquery" type="text" name="typegeoquery" value="[   ]"/>
+  <input type="hidden" class="urlvars" value=""/>
+  <hr/>
+  <script type="text/javascript">
+  function geoprocess(){
+  	var urlvars = $(".urlvars").val().split("|");
+  	var raw_query = $("#typegeoquery").val().replace("[","").replace("]","").trim();
+  	while(raw_query.indexOf("  ") > -1){
+  		raw_query = raw_query.replace("  "," ");
+  	}
+  	raw_query = raw_query.split(" ");
+  	var querytype = raw_query.splice(0,1)[0].toUpperCase();
+  	var queryparams = raw_query;
+  	$.getJSON("http://localhost:20008/datasource/" + urlvars[0] + "?file=" + urlvars[2] + "&id=" + urlvars[0] + "&project=" + urlvars[1] + "&features=true").success(function(data){
+  		if(querytype == "NEAREST"){
+	  		var nearest = [ ];
+	  		for(var f=0;f<data.features.length;f++){
+	  			var latlng = [ data.features[f][ $("#latfield").val() ], data.features[f][ $("#lngfield").val() ] ];
+	  			var mydist = Math.pow(latlng[0] - queryparams[0], 2) + Math.pow(latlng[1] - queryparams[1], 2);
+	  			if(nearest.length < queryparams[2]){
+	  				nearest.push({"id": data.features[f][ $("#idfield").val() ], dist: mydist });
+	  				continue;
+	  			}
+	  			else{
+	  				nearest.sort(function (a,b){ return a.dist - b.dist; });
+	  			}
+	  			for(var i=0;i<nearest.length;i++){
+	  				if(nearest[i].dist > mydist){
+	  					nearest.splice(i, 1);
+	  					nearest.push({"id": data.features[f][ $("#idfield").val() ], dist: mydist });
+	  					break;
+	  				}
+	  			}
+ 	 		}
+ 	 		var carto = [ ];
+ 	 		for(var i=0;i<nearest.length;i++){
+ 	 			carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = '" + nearest[i].id + "' ]");
+ 	 		}
+ 	 		
+ 	 		$("#geoqueryout").html( carto.join(",\n") + "\n{\n\n}" );
+ 	 	}
+   		else if(querytype == "NEAR"){
+	  		var nearest = [ ];
+	  		for(var f=0;f<data.features.length;f++){
+	  			var latlng = [ data.features[f][ $("#latfield").val() ], data.features[f][ $("#lngfield").val() ] ];
+	  			var mydist = Math.pow(latlng[0] - queryparams[0], 2) + Math.pow(latlng[1] - queryparams[1], 2);
+	  			mydist = Math.pow(mydist, 0.5);
+	  			if(mydist < queryparams[2] * 1){
+	  				nearest.push({"id": data.features[f][ $("#idfield").val() ], dist: mydist });
+	  				continue;
+	  			}
+ 	 		}
+ 	 		var carto = [ ];
+ 	 		for(var i=0;i<nearest.length;i++){
+ 	 			carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = '" + nearest[i].id + "' ]");
+ 	 		}
+ 	 		
+ 	 		$("#geoqueryout").html( carto.join(",\n") + "\n{\n\n}" );
+ 	 	}
+  		if(querytype == "FARTHEST"){
+	  		var nearest = [ ];
+	  		for(var f=0;f<data.features.length;f++){
+	  			var latlng = [ data.features[f][ $("#latfield").val() ], data.features[f][ $("#lngfield").val() ] ];
+	  			var mydist = Math.pow(latlng[0] - queryparams[0], 2) + Math.pow(latlng[1] - queryparams[1], 2);
+	  			if(nearest.length < queryparams[2]){
+	  				nearest.push({"id": data.features[f][ $("#idfield").val() ], dist: mydist });
+	  				continue;
+	  			}
+	  			else{
+	  				nearest.sort(function (a,b){ return b.dist - a.dist; });
+	  			}
+	  			for(var i=0;i<nearest.length;i++){
+	  				if(nearest[i].dist < mydist){
+	  					nearest.splice(i, 1);
+	  					nearest.push({"id": data.features[f][ $("#idfield").val() ], dist: mydist });
+	  					break;
+	  				}
+	  			}
+ 	 		}
+ 	 		var carto = [ ];
+ 	 		for(var i=0;i<nearest.length;i++){
+ 	 			carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = '" + nearest[i].id + "' ]");
+ 	 		}
+ 	 		
+ 	 		$("#geoqueryout").html( carto.join(",\n") + "\n{\n\n}" );
+ 	 	}
+   		else if(querytype == "FAR"){
+	  		var nearest = [ ];
+	  		for(var f=0;f<data.features.length;f++){
+	  			var latlng = [ data.features[f][ $("#latfield").val() ], data.features[f][ $("#lngfield").val() ] ];
+	  			var mydist = Math.pow(latlng[0] - queryparams[0], 2) + Math.pow(latlng[1] - queryparams[1], 2);
+	  			mydist = Math.pow(mydist, 0.5);
+	  			if(mydist > queryparams[2] * 1){
+	  				nearest.push({"id": data.features[f][ $("#idfield").val() ], dist: mydist });
+	  				continue;
+	  			}
+ 	 		}
+ 	 		var carto = [ ];
+ 	 		for(var i=0;i<nearest.length;i++){
+ 	 			carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = '" + nearest[i].id + "' ]");
+ 	 		}
+ 	 		
+ 	 		$("#geoqueryout").html( carto.join(",\n") + "\n{\n\n}" );
+ 	 	}
+   		else if(querytype == "NEIGHBOR_OTHERS_BY"){
+	  		var neighbors = [ ];
+	  		for(var f=0;f<data.features.length;f++){
+	  			var latlng = [ data.features[f][ $("#latfield").val() ], data.features[f][ $("#lngfield").val() ] ];
+	  			for(var j=0;j<data.features.length;j++){
+	  				if(f==j){
+	  					continue;
+	  				}
+	  				var jlatlng = [ data.features[j][ $("#latfield").val() ], data.features[j][ $("#lngfield").val() ] ];
+		  			var mydist = Math.pow(latlng[0] - jlatlng[0], 2) + Math.pow(latlng[1] - jlatlng[1], 2);
+		  			mydist = Math.pow(mydist, 0.5);
+		  			if(mydist < queryparams[0] * 1){
+		  				neighbors.push( data.features[f][ $("#idfield").val() ] );
+		  				break;
+		  			}
+				}
+ 	 		}
+ 	 		var carto = [ ];
+ 	 		for(var i=0;i<neighbors.length;i++){
+ 	 			carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = '" + neighbors[i] + "' ]");
+ 	 		}
+ 	 		
+ 	 		$("#geoqueryout").html( carto.join(",\n") + "\n{\n\n}" );
+ 	 	}
+ 	 	else if(querytype == "INSIDE"){
+	  		var neighbors = [ ];
+	  		var polyraw = queryparams[0].split(",");
+	  		var polygon = [ ];
+	  		var carto = [ ];
+	  		for(var pt=0;pt<polyraw.length;pt+=2){
+	  			polygon.push([ polyraw[pt], polyraw[pt+1] ]);
+	  		}
+	  		for(var f=0;f<data.features.length;f++){
+	  			var latlng = [ data.features[f][ $("#latfield").val() ], data.features[f][ $("#lngfield").val() ] ];
+	  			if( ptInPoly( latlng, polygon ) ){
+	 	 			carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = '" + neighbors[i] + "' ]");
+	 	 		}
+ 	 		}
+ 	 		
+ 	 		$("#geoqueryout").html( carto.join(",\n") + "\n{\n\n}" );
+ 	 	}
+  	});
+  }
+function ptInPoly(pt, polyCords){
+    var pointX = pt[0];
+    var pointY = pt[1];
+	var i, j, c = 0;
+	for (i = 0, j = polyCords.length - 1; i < polyCords.length; j = i++){
+		if (((polyCords[i][1] > pointY) != (polyCords[j][1] > pointY)) && (pointX < (polyCords[j][0] - polyCords[i][0]) * (pointY - polyCords[i][1]) / (polyCords[j][1] - polyCords[i][1]) + polyCords[i][0])){
+			c = !c;
+		}
+	}
+	return c;
+}
+  </script>
+  <input type="button" name="processgeoquery" value="Process" onclick="geoprocess()"/>
+  <br/>
+  <textarea id="geoqueryout" name="geoqueryout" rows="15" cols="30">
+  Completed geoquery goes here
+  </textarea>
+  <h3>Copy that text into geocsv.mss, then Save!</h3>
+</div>
