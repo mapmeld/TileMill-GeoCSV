@@ -47,5 +47,6 @@ TODO: combine rules such as [ far LAT, LNG, DEGREES ] [ far LAT, LNG, DEGREES ] 
 <ul>
 <li>Highlight the three closest bus stops to your building</li>
 <li>Re-style densely-packed points to make them more distinct</li>
-<li></li>
+<li>Map toxic sites within your city limits</li>
+<li>Contrast points within and outside of a business/delivery service area</li>
 </ul>
