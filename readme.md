@@ -11,23 +11,26 @@ Mac OS X Terminal one-liner:
 <h3>What to do</h3>
 <ol>
 <li>Open the new GeoCSV plugin.</li>
+<li>Select layer and properties.</li>
 <li>Write code like this:<br/>
 <code>
-#busstops [ near 32.3, -112.1, 0.5 ] {<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;marker-fill: red;<br/>
-}
+[ near 32.3, -112.1, 0.5 ]
 </code></li>
 <li>Click 'Process' and GeoCSV will print a list of IDs in Carto which fit those standards:
 <code>
 #busstops [ id = "101" ],<br/>
 #busstops [ id = "103" ],<br/>
 #busstops [ id = "204" ]{<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;marker-fill: red;<br/>
+<br/>
 }
 </code></li>
 </ol>
 
+Filling out a query: three points closest to southern tip of Manhattan
+
 <img src="http://i.imgur.com/ubQEU.png"/>
+
+The result:
 
 <img src="http://i.imgur.com/D0K03.png"/>
 
