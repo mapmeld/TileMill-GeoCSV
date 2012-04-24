@@ -17,7 +17,7 @@ Mac OS X Terminal one-liner:
 [ near 32.3, -112.1, 0.5 ]
 </code></li>
 <li>Click 'Process' and GeoCSV will print a list of IDs in Carto which fit those standards:
-
+<br/>
 <code>
 #busstops [ id = "101" ],<br/>
 #busstops [ id = "103" ],<br/>
