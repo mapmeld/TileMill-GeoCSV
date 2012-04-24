@@ -42,7 +42,7 @@ The result:
 <li>[ farthest LAT, LNG, COUNT ]</li>
 <li>[ neighbor_others_by DEGREES ] for clustering</li>
 <li>[ inside lat1,lng1,lat2,lng2,lat3,lng3 ] for polygons</li>
-<li>You don't need a plugin for rectangles: [lat > 10] [lat < 20] [lng > -120] [lng < -110]</li>
+<li>You don't need a plugin for rectangles</li>
 </ul>
 TODO: combine rules such as [ far LAT, LNG, DEGREES ] [ far LAT, LNG, DEGREES ] to highlight points distant from all of the lat/lngs listed
 
