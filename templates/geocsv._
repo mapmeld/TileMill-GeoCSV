@@ -35,6 +35,10 @@
   	var querytype = raw_query.splice(0,1)[0].toUpperCase();
   	var queryparams = raw_query;
   	$.getJSON("http://localhost:20008/datasource/" + urlvars[0] + "?file=" + urlvars[2] + "&id=" + urlvars[0] + "&project=" + urlvars[1] + "&features=true").success(function(data){
+  		var id_is_number = false;
+  		if(data.fields[ $("#idfield").val() ].type == "Number"){
+  			id_is_number = true;
+  		}
   		if(querytype == "NEAREST"){
 	  		var nearest = [ ];
 	  		for(var f=0;f<data.features.length;f++){
@@ -57,27 +61,32 @@
  	 		}
  	 		var carto = [ ];
  	 		for(var i=0;i<nearest.length;i++){
- 	 			carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = '" + nearest[i].id + "' ]");
+ 	 			if(id_is_number){
+	 	 			carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = " + nearest[i].id + " ]"); 	 			
+ 	 			}
+ 	 			else{
+	 	 			carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = '" + nearest[i].id + "' ]");
+	 	 		}
  	 		}
  	 		
  	 		$("#geoqueryout").html( carto.join(",\n") + "\n{\n\n}" );
  	 	}
    		else if(querytype == "NEAR"){
-	  		var nearest = [ ];
+	  		var carto = [ ];
 	  		for(var f=0;f<data.features.length;f++){
 	  			var latlng = [ data.features[f][ $("#latfield").val() ], data.features[f][ $("#lngfield").val() ] ];
 	  			var mydist = Math.pow(latlng[0] - queryparams[0], 2) + Math.pow(latlng[1] - queryparams[1], 2);
 	  			mydist = Math.pow(mydist, 0.5);
 	  			if(mydist < queryparams[2] * 1){
-	  				nearest.push({"id": data.features[f][ $("#idfield").val() ], dist: mydist });
+ 	 				if(id_is_number){
+	 	 				carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = " + data.features[f][ $("#idfield").val() ] + " ]"); 	 			
+ 	 				}
+ 		 			else{
+		 	 			carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = '" + data.features[f][ $("#idfield").val() ] + "' ]");
+		 	 		}
 	  				continue;
 	  			}
  	 		}
- 	 		var carto = [ ];
- 	 		for(var i=0;i<nearest.length;i++){
- 	 			carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = '" + nearest[i].id + "' ]");
- 	 		}
- 	 		
  	 		$("#geoqueryout").html( carto.join(",\n") + "\n{\n\n}" );
  	 	}
   		if(querytype == "FARTHEST"){
@@ -102,31 +111,36 @@
  	 		}
  	 		var carto = [ ];
  	 		for(var i=0;i<nearest.length;i++){
- 	 			carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = '" + nearest[i].id + "' ]");
+ 	 			if(id_is_number){
+	 	 			carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = " + nearest[i].id + " ]"); 	 			
+ 	 			}
+ 	 			else{
+	 	 			carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = '" + nearest[i].id + "' ]");
+	 	 		}
  	 		}
  	 		
  	 		$("#geoqueryout").html( carto.join(",\n") + "\n{\n\n}" );
  	 	}
    		else if(querytype == "FAR"){
-	  		var nearest = [ ];
+	  		var carto = [ ];
 	  		for(var f=0;f<data.features.length;f++){
 	  			var latlng = [ data.features[f][ $("#latfield").val() ], data.features[f][ $("#lngfield").val() ] ];
 	  			var mydist = Math.pow(latlng[0] - queryparams[0], 2) + Math.pow(latlng[1] - queryparams[1], 2);
 	  			mydist = Math.pow(mydist, 0.5);
 	  			if(mydist > queryparams[2] * 1){
-	  				nearest.push({"id": data.features[f][ $("#idfield").val() ], dist: mydist });
-	  				continue;
+ 	 				if(id_is_number){
+	 	 				carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = " + data.features[f][ $("#idfield").val() ] + " ]"); 	 			
+ 	 				}
+ 	 				else{
+	 	 				carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = '" + data.features[f][ $("#idfield").val() ] + "' ]");
+	 	 			}
+	 	 			continue;
 	  			}
  	 		}
- 	 		var carto = [ ];
- 	 		for(var i=0;i<nearest.length;i++){
- 	 			carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = '" + nearest[i].id + "' ]");
- 	 		}
- 	 		
  	 		$("#geoqueryout").html( carto.join(",\n") + "\n{\n\n}" );
  	 	}
    		else if(querytype == "NEIGHBOR_OTHERS_BY"){
-	  		var neighbors = [ ];
+	  		var carto = [ ];
 	  		for(var f=0;f<data.features.length;f++){
 	  			var latlng = [ data.features[f][ $("#latfield").val() ], data.features[f][ $("#lngfield").val() ] ];
 	  			for(var j=0;j<data.features.length;j++){
@@ -137,16 +151,16 @@
 		  			var mydist = Math.pow(latlng[0] - jlatlng[0], 2) + Math.pow(latlng[1] - jlatlng[1], 2);
 		  			mydist = Math.pow(mydist, 0.5);
 		  			if(mydist < queryparams[0] * 1){
-		  				neighbors.push( data.features[f][ $("#idfield").val() ] );
-		  				break;
+ 	 					if(id_is_number){
+	 	 					carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = " + data.features[f][ $("#idfield").val() ] + " ]"); 	 			
+ 	 					}
+ 	 					else{
+	 	 					carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = '" + data.features[f][ $("#idfield").val() ] + "' ]");
+	 	 				}
+	 	 				break;
 		  			}
 				}
  	 		}
- 	 		var carto = [ ];
- 	 		for(var i=0;i<neighbors.length;i++){
- 	 			carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = '" + neighbors[i] + "' ]");
- 	 		}
- 	 		
  	 		$("#geoqueryout").html( carto.join(",\n") + "\n{\n\n}" );
  	 	}
  	 	else if(querytype == "INSIDE"){
@@ -160,7 +174,12 @@
 	  		for(var f=0;f<data.features.length;f++){
 	  			var latlng = [ data.features[f][ $("#latfield").val() ], data.features[f][ $("#lngfield").val() ] ];
 	  			if( ptInPoly( latlng, polygon ) ){
-	 	 			carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = '" + neighbors[i] + "' ]");
+	  				if(id_is_number){
+		 	 			carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = " + data.features[f][ $("#idfield").val() ] + " ]");	  				
+	  				}
+	  				else{
+		 	 			carto.push("#" + urlvars[0] + " [ '" + $("#idfield").val() + "' = '" + data.features[f][ $("#idfield").val() ] + "' ]");
+		 	 		}
 	 	 		}
  	 		}
  	 		
