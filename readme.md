@@ -5,8 +5,11 @@ Works with CSV files from <a href="http://geocommons.com">GeoCommons</a>, the EP
 Works with any layer that includes attributes for latitude and longitude ( they can have any name, but they must appear in the layer inspector view )
 
 <h3>Install</h3>
-Mac OS X Terminal one-liner:
+Mac OS X Terminal - install plugin:
 <code>cp -r TileMill-GeoCSV /Applications/TileMill.app/Contents/Resources/plugins/</code>
+
+For layers with more than 500 points, copy this to raise max to 10,000 points
+<code>cp TileMill-GeoCSV/Datasource.server.bones /Applications/TileMill.app/Contents/Resources/models/
 
 <h3>What to do</h3>
 <ol>
