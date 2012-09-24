@@ -52,7 +52,7 @@ view.prototype.attach = function() {
                 // millstone will not allow `srs` be undefined for inspection so we set
                 // it to null. We could use the layer's SRS, but this likely has fewer
                 // side effects.
-                srs: null
+                srs: layer.get('srs')
             })
             .value();
         this.datasource = new models.Datasource(attr);
