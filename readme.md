@@ -24,6 +24,8 @@ For layers with more than 500 points, copy this to raise max to 10,000 points
 <code>#busstops [ id = "101" ],<br/>
 #busstops [ id = "103" ],<br/>
 #busstops [ id = "204" ]{<br/>
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/mapmeld/TileMill-GeoCSV.svg)](https://greenkeeper.io/)
 <br/>
 }
 </code></li>
